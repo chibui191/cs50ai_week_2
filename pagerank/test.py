@@ -21,7 +21,7 @@ if links_count >= 1:
 
 # if page doesn't have any outgoing links --> return a {} that chooses randomly among all pages with equal probability including itself
 else:
-    prob_distribution = {each:(1 / pages_count) for each in corpus.keys()}
+    prob_distribution = {each: (1 / pages_count) for each in corpus.keys()}
 
 probs = list(prob_distribution.values())
 prob_factor = 1 / sum(probs)

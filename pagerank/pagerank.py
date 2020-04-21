@@ -81,7 +81,7 @@ def transition_model(corpus, page, damping_factor):
 
     # if page doesn't have any outgoing links --> return a {} that chooses randomly among all pages with equal probability including itself
     else:
-        output = {each:(1 / pages_count) for each in corpus.keys()}
+        output = {each: (1 / pages_count) for each in corpus.keys()}
 
     return normalize(output)
 
@@ -112,11 +112,11 @@ def sample_pagerank(corpus, damping_factor, n):
         population = list(next_options.keys())
         weights = list(next_options.values())
         # replace sample with 1 new value randomly picked from weighted distribution {}
-        sample = random.choices(population, weights, k = 1)[0]
+        sample = random.choices(population, weights, k=1)[0]
         # update page count values in samples
         samples[sample] += 1
     
-    result = {pg:(pg_count / n) for (pg, pg_count) in samples.items()}
+    result = {pg: (pg_count / n) for (pg, pg_count) in samples.items()}
 
     return normalize(result)
 
@@ -153,9 +153,9 @@ def iterate_pagerank(corpus, damping_factor):
     
     change = dict.fromkeys(page_list, 0)
 
-    #repeat calculation until diff <= 0.001 for ALL pages
+    # repeat calculation until diff <= 0.001 for ALL pages
     while True:
-    # iteration formula
+        # iteration formula
         for (pg, current_pr) in prob_distribution.items():
             # get all inbound pages for pg
             inbounds = pages_inbound[pg]
