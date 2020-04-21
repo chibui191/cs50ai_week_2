@@ -15,11 +15,12 @@ def main():
     print(f"PageRank Results from Sampling (n = {SAMPLES})")
     for page in sorted(ranks):
         print(f"  {page}: {ranks[page]:.4f}")
-
+    print(round(sum(ranks.values()), 4))
     ranks = iterate_pagerank(corpus, DAMPING)
     print(f"PageRank Results from Iteration")
     for page in sorted(ranks):
         print(f"  {page}: {ranks[page]:.4f}")
+    print(round(sum(ranks.values()), 4))
 
 
 def crawl(directory):
@@ -49,10 +50,9 @@ def crawl(directory):
     return pages
 
 
-def normalize(probs_distribution):
-    probs = list(probs_distribution.values())
-    prob_factor = 1 / sum(probs)
-    return {key: (prob_factor * p) for (key, p) in probs_distribution.items()}
+def normalize(prob_distribution):
+    prob_factor = 1 / sum(prob_distribution.values())
+    return {page: (prob_factor * prob) for (page, prob) in prob_distribution.items()}
 
 
 def transition_model(corpus, page, damping_factor):
@@ -71,17 +71,16 @@ def transition_model(corpus, page, damping_factor):
 
     # if page has >=1 outgoing link(s) to other pages
     if links_count >= 1:
-        # probability of landing on current page again:
         # (1-d)/pages_count chance will land on same page
         output[page] = (1 - damping_factor) / pages_count
 
-        # probability of other links:
+        # probability of following on other links:
         for link in links:
             output[link] = output[page] + (damping_factor / links_count)
 
     # if page doesn't have any outgoing links --> return a {} that chooses randomly among all pages with equal probability including itself
     else:
-        output = {each: (1 / pages_count) for each in corpus.keys()}
+        output = {pg: (1 / pages_count) for pg in corpus.keys()}
 
     return normalize(output)
 
