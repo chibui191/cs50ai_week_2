@@ -157,7 +157,7 @@ def iterate_pagerank(corpus, damping_factor):
         # iteration formula
         for (pg, current_pr) in prob_distribution.items():
             # get all inbound pages for pg
-            inbounds = pages_inbound[pg]
+            inbounds = pages_incoming[pg]
             # calculate new PR for pg
             new_pr = (1 - damping_factor) / pages_count
             a = 0.0
