@@ -78,9 +78,9 @@ def transition_model(corpus, page, damping_factor):
         for link in links:
             output[link] = output[page] + (damping_factor / links_count)
 
-    # if page doesn't have any outgoing links --> return a {} that chooses randomly among all pages with equal probability including itself
+    # if page doesn't have any outgoing links --> return a {} that has all pages with equal probability including itself
     else:
-        output = {pg: (1 / pages_count) for pg in corpus.keys()}
+        output = {pg: float(1 / pages_count) for pg in corpus.keys()}
 
     return normalize(output)
 
@@ -95,29 +95,30 @@ def sample_pagerank(corpus, damping_factor, n):
     PageRank values should sum to 1.
     """
     page_list = list(corpus.keys())
-    # initialize samples dict, all with count values = 0
+    # initialize samples dictionary, all with count values = 0 to keep track of all samples
     samples = dict.fromkeys(page_list, 0)
 
-    # initialize first sample - choosing a page at random
-    # update page count
+    # initialize first sample - choosing a page at random from page_list
     sample = random.choice(page_list)
-    if sample in page_list:
-        samples[sample] += 1
+    # update count (value) for chosen sample
+    samples[sample] += 1
 
     # remaining (n - 1) samples
     for _ in range(n - 1):
-        # pass sample into transition_model to get distribution probabilities:
+        # pass current sample into transition_model to get distribution probabilities for next pick:
         next_options = transition_model(corpus, sample, damping_factor)
-        population = list(next_options.keys())
-        weights = list(next_options.values())
-        # replace sample with 1 new value randomly picked from weighted distribution {}
-        sample = random.choices(population, weights, k=1)[0]
-        # update page count values in samples
+        # replace sample with 1 new value randomly picked from weighted distribution dict
+        sample = random.choices(
+            list(next_options.keys()),
+            list(next_options.values()),
+            k=1
+        )[0]
+        # update count (value) for chosen sample
         samples[sample] += 1
-    
-    result = {pg: (pg_count / n) for (pg, pg_count) in samples.items()}
+    # output is a dictionary with key = page and value = float(count of that page/n) in samples
+    output = {pg: float(pg_count / n) for (pg, pg_count) in samples.items()}
 
-    return normalize(result)
+    return normalize(output)
 
         
 def iterate_pagerank(corpus, damping_factor):
@@ -133,10 +134,10 @@ def iterate_pagerank(corpus, damping_factor):
     pages_count = len(corpus)
     pages_inbound = dict()
 
-    # first step - initialize samples dict, all with count values = 1 / pages_count
+    # first step - initialize prob distribution dict, all with values = 1 / pages_count
     prob_distribution = dict.fromkeys(page_list, (1 / pages_count))
 
-    # create another dictionary with all pages pg and their inbound pages 
+    # create another dictionary with key = page and value = its inbound pages for all pages
     for pg1 in page_list:
         inbound_pages = set()
         for pg2 in page_list:
@@ -149,10 +150,10 @@ def iterate_pagerank(corpus, damping_factor):
                 inbound_pages.add(pg2)
 
         pages_inbound[pg1] = inbound_pages
-    
-    change = dict.fromkeys(page_list, 0)
 
-    # repeat calculation until diff <= 0.001 for ALL pages
+    # create a change dictionary to keep track of PR changes for all pages each calculation
+    change = dict.fromkeys(page_list, 0.0)
+
     while True:
         # iteration formula
         for (pg, current_pr) in prob_distribution.items():
@@ -160,18 +161,17 @@ def iterate_pagerank(corpus, damping_factor):
             inbounds = pages_inbound[pg]
             # calculate new PR for pg
             new_pr = (1 - damping_factor) / pages_count
+            a = 0.0
             for i in inbounds:
-                if len(corpus[i]) >= 1:
-                    v = damping_factor * prob_distribution[i] / len(corpus[i])
-                else: 
-                    v = damping_factor * prob_distribution[i] / pages_count
-                new_pr += v
+                a += prob_distribution[i] / len(corpus[i]) if len(corpus[i]) >= 1 else prob_distribution[i] / pages_count
+            new_pr += (a * damping_factor)
 
             # update PR change for pg
-            change[pg] = new_pr - current_pr
-            # update new PR for pg 
+            change[pg] = float(new_pr - current_pr)
+            # update PR for pg to new PR
             prob_distribution[pg] = new_pr
-
+            
+        # break out of while loop when change < 0.001 for ALL pages
         if all(abs(x) < 0.001 for x in change.values()):
             break    
 
