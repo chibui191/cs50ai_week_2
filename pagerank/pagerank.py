@@ -74,7 +74,7 @@ def transition_model(corpus, page, damping_factor):
         # (1-d)/pages_count chance will land on same page
         output[page] = (1 - damping_factor) / pages_count
 
-        # probability of following on other links:
+        # probability of following other links:
         for link in links:
             output[link] = output[page] + (damping_factor / links_count)
 
@@ -98,9 +98,8 @@ def sample_pagerank(corpus, damping_factor, n):
     # initialize samples dictionary, all with count values = 0 to keep track of all samples
     samples = dict.fromkeys(page_list, 0)
 
-    # initialize first sample - choosing a page at random from page_list
+    # first sample - choosing a page at random from page_list
     sample = random.choice(page_list)
-    # update count (value) for chosen sample
     samples[sample] += 1
 
     # remaining (n - 1) samples
@@ -113,8 +112,8 @@ def sample_pagerank(corpus, damping_factor, n):
             list(next_options.values()),
             k=1
         )[0]
-        # update count (value) for chosen sample
         samples[sample] += 1
+        
     # output is a dictionary with key = page and value = float(count of that page/n) in samples
     output = {pg: float(pg_count / n) for (pg, pg_count) in samples.items()}
 
@@ -170,7 +169,7 @@ def iterate_pagerank(corpus, damping_factor):
             change[pg] = float(new_pr - current_pr)
             # update PR for pg to new PR
             prob_distribution[pg] = new_pr
-            
+
         # break out of while loop when change < 0.001 for ALL pages
         if all(abs(x) < 0.001 for x in change.values()):
             break    
