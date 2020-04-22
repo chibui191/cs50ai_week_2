@@ -131,24 +131,24 @@ def iterate_pagerank(corpus, damping_factor):
     """
     page_list = corpus.keys()
     pages_count = len(corpus)
-    pages_inbound = dict()
+    pages_incoming = dict()
 
     # first step - initialize prob distribution dict, all with values = 1 / pages_count
     prob_distribution = dict.fromkeys(page_list, (1 / pages_count))
 
-    # create another dictionary with key = page and value = its inbound pages for all pages
+    # create another dictionary with key = page and value = its incoming pages for all pages
     for pg1 in page_list:
-        inbound_pages = set()
+        incoming_pages = set()
         for pg2 in page_list:
             if len(corpus[pg2]) >= 1:
                 if pg1 in corpus[pg2]:
-                    inbound_pages.add(pg2) 
+                    incoming_pages.add(pg2) 
                 else:
                     continue
             else:
-                inbound_pages.add(pg2)
+                incoming_pages.add(pg2)
 
-        pages_inbound[pg1] = inbound_pages
+        pages_incoming[pg1] = incoming_pages
 
     # create a change dictionary to keep track of PR changes for all pages each calculation
     change = dict.fromkeys(page_list, 0.0)
