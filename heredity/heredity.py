@@ -166,7 +166,8 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         # people without parents data
         if not people[person]["mother"] and not people[person]["father"]:    
             p_genes = PROBS["gene"][num_genes]    
-        # person has parents data
+            
+        # people without parents data
         else:
             mother_num_genes = people_data[data["mother"]][0]
             father_num_genes = people_data[data["father"]][0]
@@ -183,38 +184,33 @@ def joint_probability(people, one_gene, two_genes, have_trait):
 
             if mother_num_genes == 2:
                 from_mother_probs[True] = 1 - PROBS["mutation"]
-                from_mother_probs[False] = PROBS["mutation"]
+            elif mother_num_genes == 1:
+                from_mother_probs[True] = 0.5
+            elif mother_num_genes == 0:
+                from_mother_probs[True] = PROBS["mutation"]
+            from_mother_probs[False] = 1 - from_mother_probs[True]
+
             if father_num_genes == 2:
                 from_father_probs[True] = 1 - PROBS["mutation"]
-                from_father_probs[False] = PROBS["mutation"]
-
-            if mother_num_genes == 0:
-                from_mother_probs[False] = 1 - PROBS["mutation"]
-                from_mother_probs[True] = PROBS["mutation"]
-            if father_num_genes == 0:
-                from_father_probs[False] = 1 - PROBS["mutation"]
-                from_father_probs[True] = PROBS["mutation"]
-
-            if mother_num_genes == 1:
-                from_mother_probs[True] = 0.5
-                from_mother_probs[False] = 0.5
-            if father_num_genes == 1:
+            elif father_num_genes == 1:
                 from_father_probs[True] = 0.5
-                from_father_probs[False] = 0.5
+            elif father_num_genes == 0:
+                from_father_probs[True] = PROBS["mutation"]
+            from_father_probs[False] = 1 - from_father_probs[True]
 
             # if person has 1 copy of the gene 
-            # --> 1 from Mother, 0 from Father
-            # --> 0 from Mother, 1 from Father
+            # --> 1 from Mother ^ 0 from Father
+            # --> 0 from Mother ^ 1 from Father
             if num_genes == 1:
                 p_genes = from_mother_probs[True] * from_father_probs[False] + from_mother_probs[False] * from_father_probs[True]
             
             # if person has 2 copies 
-            # --> 1 from Mother & 1 from Father
+            # --> 1 from Mother ^ 1 from Father
             elif num_genes == 2:
                 p_genes = from_mother_probs[True] * from_father_probs[True] 
             
             # if person has 0 copy 
-            # --> 0 from both Mother and Father
+            # --> 0 from Mother ^ 0 from Father
             elif num_genes == 0:
                 p_genes = from_mother_probs[False] * from_father_probs[False]
 
