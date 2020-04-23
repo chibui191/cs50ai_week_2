@@ -96,7 +96,9 @@ def sample_pagerank(corpus, damping_factor, n):
     """
     page_list = list(corpus.keys())
     # initialize samples dictionary, all with count values = 0 to keep track of all samples
-    samples = dict.fromkeys(page_list, 0)
+    samples = dict()
+    for each in page_list:
+        samples[each] = 0
 
     # first sample - choosing a page at random from page_list
     sample = random.choice(page_list)
@@ -134,7 +136,9 @@ def iterate_pagerank(corpus, damping_factor):
     pages_incoming = dict()
 
     # first step - initialize prob distribution dict, all with values = 1 / pages_count
-    prob_distribution = dict.fromkeys(page_list, (1 / pages_count))
+    prob_distribution = dict()
+    for each in page_list:
+        prob_distribution[each] = (1 / pages_count)
 
     # create another dictionary with key = page and value = its incoming pages for all pages
     for pg1 in page_list:
@@ -151,7 +155,9 @@ def iterate_pagerank(corpus, damping_factor):
         pages_incoming[pg1] = incoming_pages
 
     # create a change dictionary to keep track of PR changes for all pages each calculation
-    change = dict.fromkeys(page_list, 0.0)
+    change = dict()
+    for each in page_list:
+        change[each] = 0.0
 
     while True:
         # iteration formula
