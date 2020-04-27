@@ -167,7 +167,7 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         if not people[person]["mother"] and not people[person]["father"]:    
             p_genes = PROBS["gene"][num_genes]    
             
-        # people without parents data
+        # people with parents data
         else:
             mother_num_genes = people_data[data["mother"]][0]
             father_num_genes = people_data[data["father"]][0]
